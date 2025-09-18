@@ -1,0 +1,24 @@
+NICHO:
+["https://www.fragrantica.com/perfume/Creed/Aventus-9828.html",
+"https://www.fragrantica.com/perfume/Creed/Carmina-84206.html",
+"https://www.fragrantica.com/perfume/Maison-Francis-Kurkdjian/Baccarat-Rouge-540-33519.html",
+"https://www.fragrantica.com/perfume/Maison-Francis-Kurkdjian/Baccarat-Rouge-540-Extrait-de-Parfum-46066.html",
+"https://www.fragrantica.com/perfume/Le-Labo/Another-13-10131.html",
+"https://www.fragrantica.com/perfume/Le-Labo/The-Noir-29-31872.html",
+"https://www.fragrantica.com/perfume/Le-Labo/The-Matcha-26-69731.html",
+"https://www.fragrantica.com/perfume/Le-Labo/Santal-33-12201.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/Rose-des-Vents-40495.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/L-Immensite-49751.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/Pacific-Chill-81423.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/Imagination-67370.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/Attrape-Reves-51016.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/Ombre-Nomade-49755.html",
+"https://www.fragrantica.com/perfume/Parfums-de-Marly/Delina-43871.html",
+"https://www.fragrantica.com/perfume/Tom-Ford/Ombre-Leather-2018-50239.html",
+"https://www.fragrantica.com/perfume/Tom-Ford/Black-Orchid-1018.html",
+"https://www.fragrantica.com/perfume/Tom-Ford/Lost-Cherry-51411.html",
+"https://www.fragrantica.com/perfume/By-Kilian/Black-Phantom-43632.html",
+"https://www.fragrantica.com/perfume/Xerjoff/Erba-Pura-55157.html"]
+
+export GOOGLE_APPLICATION_CREDENTIALS=/Users/juanaleman/Documents/programasRandom/perfumes/credentials/profumo-app-firebase-adminsdk-fbsvc-b42f67804c.json
+(.venv) juanaleman@MacBook-Pro-de-Juan perfumes % python scrapper/upload_data.py --root dataset --bucket profumo-app.firebasestorage.app --project_id profumo-app --collection perfumes     

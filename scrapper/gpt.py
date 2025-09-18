@@ -18,8 +18,16 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import re
 import json
+import shutil
 
 import mimetypes, requests
+
+def to_slug(s: str) -> str:
+    s = (s or "").strip().lower()
+    s = re.sub(r"[^a-z0-9\s-]", "", s)
+    s = re.sub(r"\s+", "-", s)
+    s = re.sub(r"-+", "-", s)
+    return s
 
 def build_driver():
     headless = (os.getenv("HEADLESS", "0") == "1")
@@ -29,7 +37,9 @@ def build_driver():
     opts.add_argument("--window-size=1300,900")
     if headless:
         opts.add_argument("--headless=new")
-    drv = uc.Chrome(options=opts)
+    # use_subprocess=True es un fix común para el error "NoSuchWindowException: target window already closed"
+    # que puede ocurrir si el proceso del navegador se cierra inesperadamente al inicio.
+    drv = uc.Chrome(options=opts, use_subprocess=True)
     drv.set_page_load_timeout(40)
     return drv
 
@@ -68,9 +78,11 @@ def save_html(url: str, out_path: str):
         # opcional: baja al fondo para que cargue contenido lazy
         scroll_to_bottom(driver)
         html = driver.page_source
+        # Asegurarse de que el directorio de salida exista
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
         with open(out_path, "w", encoding="utf-8") as f:
             f.write(html)
-        print(f"[OK] Guardado {len(html)} chars en {out_path}")
+        print(f"[OK] Guardado {len(html)} caracteres en {out_path}")
     finally:
         try:
             driver.quit()
@@ -78,6 +90,9 @@ def save_html(url: str, out_path: str):
             pass
 
 def parser_html(html_path: str, out_path: str, url: str):
+    if not os.path.exists(html_path):
+        print(f"[ERROR] El archivo HTML no existe: {html_path}")
+        return
     with open(html_path, "r", encoding="utf-8") as f:
         html = f.read()
 
@@ -140,11 +155,24 @@ def parser_html(html_path: str, out_path: str, url: str):
     notes_number = div_base.select(
         "div.cell.small-12 > div#pyramid.grid-x.grid-padding-y > div.cell > div > div"
     )
+
     elements = [str(tag.name) for tag in notes_number[1].find_all(True, recursive=True)]
     indices_h4 = [indice for indice, elemento in enumerate(elements) if elemento == 'h4']
-    top_notes_number = elements[indices_h4[0]:indices_h4[1]].count("span")
+
+    """top_notes_number = elements[indices_h4[0]:indices_h4[1]].count("span")
     middle_notes_number = elements[indices_h4[1]:indices_h4[2]].count("span")
-    base_notes_number = elements[indices_h4[2]:].count("span")
+    base_notes_number = elements[indices_h4[2]:].count("span")"""
+
+    try:
+        top_notes_number = elements[indices_h4[0]:indices_h4[1]].count("span")
+        middle_notes_number = elements[indices_h4[1]:indices_h4[2]].count("span")
+        base_notes_number = elements[indices_h4[2]:].count("span")
+    except:
+        indices_a = [indice for indice, elemento in enumerate(elements) if elemento == 'a']
+        top_notes_number = len(indices_a)
+        middle_notes_number = 0
+        base_notes_number = 0
+
     total_notes = []
     notes = div_base.select(
         "div.cell.small-12 > div#pyramid.grid-x.grid-padding-y > div.cell > div > div > div > div > div > div"
@@ -154,8 +182,8 @@ def parser_html(html_path: str, out_path: str, url: str):
             total_notes.append(note.text)
     notes_final = {
         "top_notes": total_notes[:top_notes_number],
-        "middle_notes": total_notes[top_notes_number:top_notes_number + middle_notes_number],
-        "base_notes": total_notes[-base_notes_number:]
+        "middle_notes": total_notes[top_notes_number:top_notes_number + middle_notes_number] if middle_notes_number != 0 else [],
+        "base_notes": total_notes[-base_notes_number:] if base_notes_number != 0 else []
     }
 
     # Diccionario Final
@@ -175,8 +203,6 @@ def parser_html(html_path: str, out_path: str, url: str):
 
 def download_image(url, out_dir="images", filename=None,
                    referer="https://www.fragrantica.com/"):
-    print(filename)
-
     os.makedirs(out_dir, exist_ok=True)
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -196,14 +222,75 @@ def download_image(url, out_dir="images", filename=None,
                     f.write(chunk)
     return path
 
+urls_nicho = [
+"https://www.fragrantica.com/perfume/Le-Labo/The-Matcha-26-69731.html",
+"https://www.fragrantica.com/perfume/Le-Labo/Santal-33-12201.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/Rose-des-Vents-40495.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/L-Immensite-49751.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/Pacific-Chill-81423.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/Imagination-67370.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/Attrape-Reves-51016.html",
+"https://www.fragrantica.com/perfume/Louis-Vuitton/Ombre-Nomade-49755.html",
+"https://www.fragrantica.com/perfume/Parfums-de-Marly/Delina-43871.html",
+"https://www.fragrantica.com/perfume/Tom-Ford/Ombre-Leather-2018-50239.html",
+"https://www.fragrantica.com/perfume/Tom-Ford/Black-Orchid-1018.html",
+"https://www.fragrantica.com/perfume/Tom-Ford/Lost-Cherry-51411.html",
+"https://www.fragrantica.com/perfume/By-Kilian/Black-Phantom-43632.html",
+"https://www.fragrantica.com/perfume/Xerjoff/Erba-Pura-55157.html"
+]
+
 if __name__ == "__main__":
-    url_master = "https://www.fragrantica.com/perfume/Zimaya/Mazaaj-Infused-97103.html"
-    out = url_master.split("/")[-1]
-    image_filename = url_master.split("/")[-1][:-5] + ".jpg"
-    save_html(url_master, out)
-    parser_html(out, out.replace(".html", ".json"), url_master)
-    download_image(
-        url= f"https://fimgs.net/mdimg/perfume-thumbs/375x500.{url_master.split('/')[-1].split('-')[-1][:-5]}.jpg",
-        filename=image_filename,
-        referer=url_master
-    )
+    # url_master = "https://www.fragrantica.com/perfume/Creed/Carmina-84206.html"
+    for url_master in urls_nicho:
+
+        # 1. Extraer el ID del perfume de la URL para usarlo como identificador único.
+        perfume_name_id = url_master.split("/")[-1].replace(".html", "")
+
+        # 2. Crear un directorio temporal para los archivos intermedios.
+        temp_dir = os.path.join("data", "temp", perfume_name_id)
+        os.makedirs(temp_dir, exist_ok=True)
+
+        # 3. Definir rutas para los archivos temporales de HTML y JSON.
+        temp_html_path = os.path.join(temp_dir, f"{perfume_name_id}.html")
+        temp_json_path = os.path.join(temp_dir, f"{perfume_name_id}.json")
+
+        # 4. Guardar y parsear el HTML para crear un JSON temporal.
+        save_html(url_master, temp_html_path)
+        parser_html(temp_html_path, temp_json_path, url_master)
+
+        # 5. Leer el JSON temporal para obtener la marca y otros datos.
+        if not os.path.exists(temp_json_path):
+            print(f"[ERROR] El parser no pudo crear el archivo JSON: {temp_json_path}")
+            shutil.rmtree(os.path.dirname(temp_dir)) # Limpiar directorio padre 'temp' si está vacío
+            exit()
+
+        with open(temp_json_path, "r", encoding="utf-8") as f:
+            perfume_data = json.load(f)
+
+        if not perfume_data or not perfume_data.get("brand"):
+            print(f"[ERROR] No se pudo leer la marca del JSON para {url_master}")
+            shutil.rmtree(os.path.dirname(temp_dir))
+            exit()
+
+        # 6. Crear el slug de la marca y la estructura de directorios final.
+        brand_slug = to_slug(perfume_data["brand"])
+        final_output_dir = os.path.join("dataset", "perfumes", brand_slug, perfume_name_id)
+        os.makedirs(final_output_dir, exist_ok=True)
+
+        # 7. Mover y renombrar el archivo JSON a meta.json.
+        final_json_path = os.path.join(final_output_dir, "meta.json")
+        shutil.move(temp_json_path, final_json_path)
+        print(f"[OK] Guardado meta.json en {final_json_path}")
+
+        # 8. Descargar la imagen como image.jpg en el directorio final.
+        image_path = download_image(
+            url=perfume_data["img_url"],
+            out_dir=final_output_dir,
+            filename="image.jpg",
+            referer=url_master
+        )
+        print(f"[OK] Guardada imagen en {image_path}")
+
+        # 9. Limpiar el directorio temporal.
+        shutil.rmtree(temp_dir)
+        print(f"[OK] Limpiado directorio temporal {temp_dir}")

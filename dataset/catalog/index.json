@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "generated_at": "2025-09-15T18:30:37.567996Z",
+  "count": 3,
+  "items": [
+    {
+      "id": "9828",
+      "name": "Aventus Creed",
+      "brand": "Creed",
+      "brand_slug": "creed",
+      "gender": "men",
+      "accords": [
+        "fruity",
+        "sweet",
+        "woody",
+        "leather",
+        "citrus",
+        "smoky",
+        "musky",
+        "tropical",
+        "fresh",
+        "mossy"
+      ],
+      "notes": {
+        "top": [
+          "Bergamot",
+          "Black Currant",
+          "Apple",
+          "Lemon",
+          "Pink Pepper"
+        ],
+        "mid": [
+          "Pineapple",
+          "Patchouli",
+          "Moroccan Jasmine"
+        ],
+        "base": [
+          "Birch",
+          "Musk",
+          "oak moss",
+          "Cedarwood",
+          "Ambroxan"
+        ]
+      },
+      "times": {
+        "winter": 43.7999,
+        "spring": 97.5218,
+        "summer": 99.4164,
+        "fall": 74.3558,
+        "day": 100.0,
+        "night": 68.6091
+      },
+      "image_url": "https://img.tudominio.com/perfumes/creed/Aventus-9828/image.jpg",
+      "meta_url": "https://img.tudominio.com/perfumes/creed/Aventus-9828/meta.json",
+      "updated_at": null
+    },
+    {
+      "id": "84206",
+      "name": "Carmina Creed",
+      "brand": "Creed",
+      "brand_slug": "creed",
+      "gender": "women",
+      "accords": [
+        "rose",
+        "amber",
+        "musky",
+        "floral",
+        "cherry",
+        "warm spicy",
+        "powdery",
+        "fresh",
+        "violet",
+        "woody"
+      ],
+      "notes": {
+        "top": [
+          "Black Cherry",
+          "Saffron",
+          "Pink Pepper"
+        ],
+        "mid": [
+          "May Rose",
+          "Peony",
+          "Violet",
+          "Cashmere Wood"
+        ],
+        "base": [
+          "Musk",
+          "Ambroxan",
+          "Myrhh",
+          "Frankincense"
+        ]
+      },
+      "times": {
+        "winter": 88.0,
+        "spring": 80.8421,
+        "summer": 40.8421,
+        "fall": 100.0,
+        "day": 77.4737,
+        "night": 93.6842
+      },
+      "image_url": "https://img.tudominio.com/perfumes/creed/Carmina-84206/image.jpg",
+      "meta_url": "https://img.tudominio.com/perfumes/creed/Carmina-84206/meta.json",
+      "updated_at": null
+    },
+    {
+      "id": "84951",
+      "name": "Devotion Dolce&Gabbana",
+      "brand": "Dolce&Gabbana",
+      "brand_slug": "dolcegabbana",
+      "gender": "women",
+      "accords": [
+        "vanilla",
+        "sweet",
+        "white floral",
+        "lactonic",
+        "powdery",
+        "rum",
+        "citrus"
+      ],
+      "notes": {
+        "top": [
+          "Candied Lemon"
+        ],
+        "mid": [
+          "Panacotta",
+          "Orange Blossom",
+          "Rum"
+        ],
+        "base": [
+          "Vanilla"
+        ]
+      },
+      "times": {
+        "winter": 93.409,
+        "spring": 70.1191,
+        "summer": 51.537,
+        "fall": 100.0,
+        "day": 96.0122,
+        "night": 62.5588
+      },
+      "image_url": "https://img.tudominio.com/perfumes/dolcegabbana/Devotion-84951/image.jpg",
+      "meta_url": "https://img.tudominio.com/perfumes/dolcegabbana/Devotion-84951/meta.json",
+      "updated_at": null
+    }
+  ]
+}
